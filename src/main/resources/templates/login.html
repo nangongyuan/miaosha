@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<body>
+
+<form class="layui-form" style="width: 50%;text-align: center;margin: 200px auto;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">手机号</label>
+        <div class="layui-input-block">
+            <input type="text" name="mobile" placeholder="请输入手机号码" autocomplete="off" class="layui-input" lay-verify="required|phone|number">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-block">
+            <input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="*">登录</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+
+<script src="/layui/layui.js"></script>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
+<script>
+    var g_password_salt = "q[akfapla-0f2jf";
+    layui.use(['layer', 'form'], function(){
+        var layer = layui.layer;
+        var form = layui.form;
+        form.on('submit(*)', function(data){
+            var login_info = data.field;
+            var str = " " + g_password_salt.charAt(0) + g_password_salt.charAt(2) + login_info.password + g_password_salt;
+            login_info.password = md5(str);
+            layui.jquery.ajax({
+                type: "POST",
+                url: "/login/do_login",
+                data: login_info,
+                dataType: "json",
+                success: function (data) {
+                    layer.msg(data.msg);
+                    console.log(data);
+                }
+            })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>
