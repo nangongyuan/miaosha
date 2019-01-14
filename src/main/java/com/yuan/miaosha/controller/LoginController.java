@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -46,9 +47,9 @@ public class LoginController {
 
 	@RequestMapping("/do_login")
 	@ResponseBody
-	public Result doLogin(@Valid LoginQo loginQo){
+	public Result doLogin(HttpServletResponse response, @Valid LoginQo loginQo){
 		log.info("用户登录："+ loginQo);
-		miaoshaUserService.login(loginQo);
+		miaoshaUserService.login(response, loginQo);
 		return Result.success(CodeMsg.SUCCESS);
 	}
 }

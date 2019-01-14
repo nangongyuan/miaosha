@@ -1,8 +1,8 @@
 /**
  * Copyright (C), 2015-2019, XXX有限公司
- * FileName: UserPrefix
+ * FileName: MiaoshaUserPrefix
  * Author:   Administrator
- * Date:     2019/1/13 0013 17:28
+ * Date:     2019/1/14 0014 21:12
  * Description:
  * History:
  * <author>          <time>          <version>          <desc>
@@ -14,19 +14,19 @@ package com.yuan.miaosha.redis;
  * 〈〉
  *
  * @author Administrator
- * @create 2019/1/13 0013
+ * @create 2019/1/14 0014
  * @since 1.0.0
  */
-public class UserPrefix extends BasePrefix {
+public class MiaoshaUserPrefix extends BasePrefix {
 
-	private UserPrefix(String prefix) {
+	private MiaoshaUserPrefix(String prefix) {
 		super(prefix);
 	}
 
+	private MiaoshaUserPrefix(Integer expireSeconds, String prefix){
+		super(expireSeconds, prefix);
+	}
 
-	public static UserPrefix getById = new UserPrefix("id");
-
-	public static UserPrefix getByName = new UserPrefix("name");
-
+	public static MiaoshaUserPrefix token = new MiaoshaUserPrefix(60*120, "token");
 
 }

@@ -31,26 +31,30 @@ public class RedisService {
 	@Autowired
 	private JedisPool jedisPool;
 
-	public <T> T get(String keyPrefix, String key, Class<T> clazz){
+	public <T> T get(BasePrefix keyPrefix, String key, Class<T> clazz){
 		Jedis jedis = null;
 		try{
 			jedis = jedisPool.getResource();
-			String realKey = keyPrefix + key;
-			String str = jedis.get(realKey);
-			return stringToBean(str, clazz);
+			String realKey = keyPrefix.getPrefix() + ":" + key;
+			String strJson = jedis.get(realKey);
+			return stringToBean(strJson, clazz);
 		}finally {
 			returnToPool(jedis);
 		}
 	}
 
-	public <T> T set(String keyPrefix, String key, T value){
+	public <T> T set(BasePrefix keyPrefix, String key, T value){
 		Jedis jedis = null;
 		try{
 			jedis = jedisPool.getResource();
-			String str = beanToString(value);
-			if (str != null){
-				String realKey = keyPrefix + key;
-				jedis.set(realKey, str);
+			String strJson = beanToString(value);
+			if (strJson != null){
+				String realKey = keyPrefix.getPrefix() + ":" + key;
+				if (keyPrefix.getExpireSeconds()<=0){
+					jedis.set(realKey, strJson);
+				}else{
+					jedis.setex(realKey, keyPrefix.getExpireSeconds(),strJson);
+				}
 			}
 			return value;
 		}finally {
@@ -64,7 +68,7 @@ public class RedisService {
 			jedis = jedisPool.getResource();
 			String str = beanToString(value);
 			if (str != null){
-				String realKey = keyPrefix + key;
+				String realKey = keyPrefix + ":" + key;
 				if (expireSeconds<=0){
 					jedis.set(realKey, str);
 				}else{
@@ -81,7 +85,7 @@ public class RedisService {
 		Jedis jedis = null;
 		try{
 			jedis = jedisPool.getResource();
-			String realKey = keyPrefix + key;
+			String realKey = keyPrefix + ":" + key;
 			return jedis.incr(realKey);
 		}finally {
 			returnToPool(jedis);
@@ -92,7 +96,7 @@ public class RedisService {
 		Jedis jedis = null;
 		try{
 			jedis = jedisPool.getResource();
-			String realKey = keyPrefix + key;
+			String realKey = keyPrefix + ":" + key;
 			return jedis.decr(realKey);
 		}finally {
 			returnToPool(jedis);
@@ -103,7 +107,7 @@ public class RedisService {
 		Jedis jedis = null;
 		try{
 			jedis = jedisPool.getResource();
-			String realKey = keyPrefix + key;
+			String realKey = keyPrefix + ":" + key;
 			return jedis.exists(realKey);
 		}finally {
 			returnToPool(jedis);
